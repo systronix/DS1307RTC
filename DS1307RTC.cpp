@@ -77,10 +77,8 @@ bool DS1307RTC::read(tmElements_t &tm)
   Wire.send(0x00);
 #endif  
   if (Wire.endTransmission() != 0) {
-    exists = false;
     return false;
   }
-  exists = true;
 
   // request the 7 data fields   (secs, min, hr, dow, date, mth, yr)
   Wire.requestFrom(DS1307_CTRL_ID, tmNbrFields);
@@ -134,10 +132,9 @@ bool DS1307RTC::write(tmElements_t &tm)
   Wire.send(dec2bcd(tmYearToY2k(tm.Year)));   
 #endif
   if (Wire.endTransmission() != 0) {
-    exists = false;
     return false;
   }
-  exists = true;
+
 
   // Now go back and set the seconds, starting the clock back up as a side effect
   Wire.beginTransmission(DS1307_CTRL_ID);
@@ -149,10 +146,8 @@ bool DS1307RTC::write(tmElements_t &tm)
   Wire.send(dec2bcd(tm.Second)); // write the seconds, with the stop bit clear to restart
 #endif
   if (Wire.endTransmission() != 0) {
-    exists = false;
     return false;
   }
-  exists = true;
   return true;
 }
 
@@ -224,8 +219,6 @@ uint8_t DS1307RTC::bcd2dec(uint8_t num)
 {
   return ((num/16 * 10) + (num % 16));
 }
-
-bool DS1307RTC::exists = false;
 
 DS1307RTC RTC = DS1307RTC(); // create an instance for the user
 
